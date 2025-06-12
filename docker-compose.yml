@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - static_volume:/app/staticfiles
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    networks:
+      - mathproblems_network
+
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - mathproblems_network
+
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/staticfiles:ro
+    depends_on:
+      - web
+    networks:
+      - mathproblems_network
+
+networks:
+  mathproblems_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  static_volume:

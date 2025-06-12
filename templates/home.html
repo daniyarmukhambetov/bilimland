@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Math Problems{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-5">
+        <h1 class="display-4">Welcome to Math Problems</h1>
+        <p class="lead">Improve your math skills by solving challenging problems</p>
+        
+        {% if not user.is_authenticated %}
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary me-2">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary">Register</a>
+            </div>
+        {% else %}
+            <div class="mt-4">
+                <a href="{% url 'problem-list' %}" class="btn btn-primary">Start Solving</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">
+                    <i class="bi bi-calculator"></i> Various Problem Types
+                </h3>
+                <p class="card-text">Practice with multiple-choice, single-choice, and open-ended math problems.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">
+                    <i class="bi bi-graph-up"></i> Track Your Progress
+                </h3>
+                <p class="card-text">Keep track of your solved problems and monitor your improvement over time.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">
+                    <i class="bi bi-award"></i> Challenge Yourself
+                </h3>
+                <p class="card-text">Problems range from easy to hard, helping you gradually improve your skills.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">Your Statistics</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Solved Problems</h5>
+                        <p class="stat-number">{{ user.profile.solved_problems_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Attempts</h5>
+                        <p class="stat-number">{{ user.profile.total_attempts_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Success Rate</h5>
+                        <p class="stat-number">
+                            {% if user.profile.total_attempts_count > 0 %}
+                                {{ user.profile.solved_problems_count|floatformat:0 }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <h2 class="mb-4">Recently Solved Problems</h2>
+        {% if recent_attempts %}
+            <div class="list-group">
+                {% for attempt in recent_attempts %}
+                    <a href="{% url 'problem-detail' attempt.problem.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ attempt.problem.title }}</h5>
+                            <small>{{ attempt.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <p class="mb-1">{{ attempt.problem.description|truncatewords:20 }}</p>
+                        <small>
+                            <span class="badge bg-{{ attempt.problem.difficulty }}">{{ attempt.problem.get_difficulty_display }}</span>
+                            <span class="badge bg-primary">{{ attempt.problem.get_problem_type_display }}</span>
+                        </small>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                You haven't solved any problems yet. <a href="{% url 'problem-list' %}">Start solving now!</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

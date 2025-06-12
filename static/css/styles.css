@@ -1,0 +1,100 @@
+/* Custom styles for Math Problems application */
+
+/* General styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Problem card styling */
+.problem-card {
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.problem-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Difficulty badges */
+.badge-easy {
+    background-color: #28a745;
+}
+
+.badge-medium {
+    background-color: #ffc107;
+}
+
+.badge-hard {
+    background-color: #dc3545;
+}
+
+/* Problem detail page */
+.problem-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Choice styling */
+.choice-item {
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.choice-item:hover {
+    background-color: #f8f9fa;
+}
+
+.choice-item.selected {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+}
+
+/* Profile page */
+.profile-stats {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Pagination styling */
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* LaTeX rendering improvements */
+.math-content {
+    overflow-x: auto;
+}
+
+/* Filter sidebar */
+.filter-sidebar {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-sidebar {
+        margin-bottom: 20px;
+    }
+}
