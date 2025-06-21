@@ -7,7 +7,7 @@ import os
 import django
 
 # Set up Django environment
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mathproblems.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'uzdikland.settings')
 django.setup()
 
 from django.contrib.auth.models import User

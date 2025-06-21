@@ -1,135 +1,113 @@
-# Math Problems Platform
+# Uzdikland
 
-A Django-based platform for solving math problems, similar to LeetCode but for mathematics.
+A Django application for math problems.
 
-## Features
+## Docker Setup
 
-- User authentication (login, registration)
-- Problem listing with filters and pagination
-- Different problem types (MCQ, SCQ, open-ended)
-- LaTeX support for mathematical expressions
-- User profiles with statistics
-- Admin interface for problem and user management
+This project uses a minimalistic Docker setup for easy deployment.
 
-## Project Structure
+### Building the Docker Image
 
-- `mathproblems/` - Main project settings
-- `problems/` - App for managing math problems
-- `accounts/` - App for user accounts and profiles
-- `templates/` - HTML templates
-- `static/` - Static files (CSS, JS, images)
-- `nginx/` - Nginx configuration for production
-- `docker-compose.yml` - Docker Compose configuration
+```bash
+docker build -t uzdikland .
+```
 
-## Running with Docker (Recommended)
+### Running the Container
 
-1. Make sure you have Docker and Docker Compose installed on your system.
+```bash
+# Using SQLite (default)
+docker run -d --name uzdikland \
+  -p 8000:8000 \
+  -v uzdikland_data:/app/data \
+  uzdikland
 
-2. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd mathproblems
-   ```
-
-3. Build and start the containers:
-   ```
-   docker-compose up -d --build
-   ```
-
-4. Access the application at http://localhost
-
-5. Access the admin interface at http://localhost/admin
-   - Default admin credentials: username: `admin`, password: `admin`
-
-6. To stop the containers:
-   ```
-   docker-compose down
-   ```
-
-## Local Development Setup
-
-1. Create and activate a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. Run migrations:
-   ```
-   python manage.py migrate
-   ```
-
-4. Create a superuser:
-   ```
-   python manage.py createsuperuser
-   ```
-
-5. Create sample data:
-   ```
-   python create_sample_data.py
-   ```
-
-6. Run the development server:
-   ```
-   python manage.py runserver
-   ```
-
-7. Access the site at http://127.0.0.1:8000/
-
-## Production Deployment
-
-The application is configured to run with:
-
-- **Gunicorn**: WSGI HTTP server with 3 worker processes
-- **Nginx**: Web server for static files and reverse proxy
-- **PostgreSQL**: Database server
-- **Docker**: Containerization for easy deployment
+# Using PostgreSQL
+docker run -d --name uzdikland \
+  -p 8000:8000 \
+  -e DATABASE_URL=postgres://username:password@host:port/dbname \
+  uzdikland
+```
 
 ### Environment Variables
 
-The following environment variables can be configured in the `.env` file:
+The application uses the following environment variables:
 
-- `DEBUG`: Set to "True" for development, "False" for production
-- `SECRET_KEY`: Django secret key
-- `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
-- `POSTGRES_DB`: PostgreSQL database name
-- `POSTGRES_USER`: PostgreSQL username
-- `POSTGRES_PASSWORD`: PostgreSQL password
-- `POSTGRES_HOST`: PostgreSQL host
-- `POSTGRES_PORT`: PostgreSQL port
-- `STATIC_URL`: URL for static files
-- `STATIC_ROOT`: Directory for collected static files
+- `DATABASE_URL`: Database connection string (default: SQLite in /app/data)
+  - SQLite example: `sqlite:///data/db.sqlite3`
+  - PostgreSQL example: `postgres://username:password@host:port/dbname`
 
-## Usage
+- `DJANGO_SUPERUSER_USERNAME`: Username for the Django superuser (default: uzdikland_admin)
+- `DJANGO_SUPERUSER_PASSWORD`: Password for the Django superuser (default: Uzd1kL@nd2025!)
+- `DJANGO_SUPERUSER_EMAIL`: Email for the Django superuser (default: admin@uzdikland.kz)
 
-1. Log in as an admin and create problems through the admin interface
-2. Create different types of problems (MCQ, SCQ, open-ended)
-3. For MCQ/SCQ problems, add choices and mark the correct ones
-4. Users can register, browse problems, and submit solutions
-5. The system tracks user progress and statistics
+- `CREATE_SAMPLE_DATA`: Whether to create sample data (default: "yes")
 
-## LaTeX Support
+### Accessing the Application
 
-The platform supports LaTeX for mathematical expressions:
+Once the container is running, you can access the application at:
 
-- Inline math: `$x^2 + y^2 = z^2$`
-- Display math: `$$\int_{a}^{b} f(x) dx$$`
+- Application: http://localhost:8000
+- Admin interface: http://localhost:8000/admin
+  - Default superuser credentials: 
+    - Username: `uzdikland_admin`
+    - Password: `Uzd1kL@nd2025!`
 
-## Problem Types
+### Stopping the Container
 
-1. **Multiple Choice Questions (MCQ)**: Users can select multiple correct answers
-2. **Single Choice Questions (SCQ)**: Users must select exactly one correct answer
-3. **Open-ended Questions**: Users can provide a text answer that will be reviewed manually
+```bash
+docker stop uzdikland
+docker rm uzdikland
+```
 
-## Admin Features
+## Development
 
-Administrators can:
-- Create and manage problems
-- Review user submissions for open-ended questions
-- Manage user accounts
-- View statistics and reports
+For local development without Docker, set up a virtual environment and install dependencies:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Run migrations and start the development server:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+## Database Configuration
+
+The application uses `dj-database-url` to parse the `DATABASE_URL` environment variable. By default, it uses SQLite stored in the `/app/data` directory. You can switch to any supported database by setting the `DATABASE_URL` environment variable.
+
+### SQLite (Default)
+```
+DATABASE_URL=sqlite:///data/db.sqlite3
+```
+
+### PostgreSQL
+```
+DATABASE_URL=postgres://username:password@host:port/dbname
+```
+
+### MySQL
+```
+DATABASE_URL=mysql://username:password@host:port/dbname
+```
+
+## Scripts
+
+The application includes several utility scripts:
+
+### create_superuser.py
+
+Creates a superuser account using environment variables:
+- `DJANGO_SUPERUSER_USERNAME`
+- `DJANGO_SUPERUSER_PASSWORD`
+- `DJANGO_SUPERUSER_EMAIL`
+
+This script is automatically run during container startup.
+
+### create_sample_data.py
+
+Creates sample math problems in the database. This script is automatically run during container startup if `CREATE_SAMPLE_DATA` is set to "yes".

@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('register/', views.register, name='register'),
+    # Registration and profile editing removed - only admin can create/edit users
     path('profile/', views.profile, name='profile'),
-    path('profile/edit/', views.edit_profile, name='edit-profile'),
 ]

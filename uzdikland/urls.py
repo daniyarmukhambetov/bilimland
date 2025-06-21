@@ -1,5 +1,5 @@
 """
-URL configuration for mathproblems project.
+URL configuration for uzdikland project.
 """
 from django.contrib import admin
 from django.urls import path, include

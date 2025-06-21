@@ -1,36 +1,31 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Set work directory
 WORKDIR /app
 
-# Install system dependencies
+# Install only essential dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Create data directory for SQLite
+RUN mkdir -p /app/data && chmod 777 /app/data
 
-# Copy project
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
 COPY . .
 
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Make entrypoint script executable
+RUN chmod +x /app/entrypoint.sh
 
-# Install dos2unix to fix line endings
-RUN apt-get update && apt-get install -y dos2unix && \
-    dos2unix /app/docker-entrypoint.sh && \
-    chmod +x /app/docker-entrypoint.sh && \
-    apt-get remove -y dos2unix && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+# Expose port
+EXPOSE 8000
 
-# Run entrypoint script
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Set entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
