@@ -1,31 +1,29 @@
-FROM python:3.12-slim
+ARG PYTHON_VERSION=3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+FROM python:${PYTHON_VERSION}
 
-WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Install only essential dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-client \
+# install psycopg2 dependencies.
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data && chmod 777 /app/data
+RUN mkdir -p /code
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /code
 
-# Copy project files
-COPY . .
+COPY requirements.txt /tmp/requirements.txt
+RUN set -ex && \
+    pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    rm -rf /root/.cache/
+COPY . /code
 
-# Make entrypoint script executable
-RUN chmod +x /app/entrypoint.sh
+RUN python manage.py collectstatic --noinput
 
-# Expose port
 EXPOSE 8000
 
-# Set entrypoint
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["gunicorn","--bind",":8000","--workers","2","uzdikland.wsgi"]

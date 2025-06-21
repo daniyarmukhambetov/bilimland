@@ -68,6 +68,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://bilimland.fly.dev']
+
 ROOT_URLCONF = "uzdikland.urls"
 
 TEMPLATES = [
